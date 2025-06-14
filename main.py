@@ -9,19 +9,16 @@ pack escalado (drive del profe): https://drive.google.com/drive/folders/19obh4TK
 > Página para redimensionar assets https://imageresizer.com/bulk-resize/
 ============================================================================================================================
 
-Version actual: [M9.L1] - Actividad #5: "Atributos"
-Objetivo: Familiarizarnos con los atributos agregando salud y ataque a nuestro personaje
-          > Creamos nuestro personaje como un objeto Actor() con sus respectivos atributos y los mostramos por pantalla
+Version actual: [M9.L1] - Actividad #6: "Desplazamiento a través de las celdas"
+Objetivo: Implementar nuestro sistema de movimiento (por casillas/por turnos)
 
-NOTA: La actividad #4 fue resuelta con el código de la actividad #3
+NOTA: Borrar update(dt)
 
 PASOS:
 
-1º) Creamos Actor() personaje
-2º) Le damos sus atributos (salud, ataque)
-3º) Eliminamos update(dt) y modificamos nuestra función draw() (rem: apagar texto)
+1º) Implementar el despalzamiento entre celdas por turnos con on_key_down(key)
 
-NOTA: En el próximo ejercicio implementaremos el despalzamiento entre celdas por turnos con on_key_down(key)
+NOTA: Revisar restricciones
 """
 
 # Ventana de juego hecha de celdas
@@ -131,11 +128,20 @@ def draw():
     screen.draw.text(("❤️: " + str(personaje.salud)), midright=((WIDTH - 15), 14), color = 'white', fontsize = 16)
     screen.draw.text(("🗡️: " + str(personaje.ataque)), midright=((WIDTH - 15), 36), color = 'white', fontsize = 16)
 
-def update(dt):
-    global mapa_actual
+def on_key_down(key):
+  
+  if ((keyboard.right or keyboard.d) and (personaje.x < (WIDTH - celda.width * 2))):
+    # ¿Xq 2?: Una (a la que me voy a desplazar) y otra (por la pared, que NO puedo atravesar)
+    personaje.x += celda.width
+    personaje.image = "stand" # xq stand mira a la dcha
+        
+  elif ((keyboard.left or keyboard.a) and (personaje.x > (celda.width * 2))):
+    personaje.x -= celda.width
+    personaje.image = "left" # xq mira a la izq
+        
+  elif ((keyboard.down or keyboard.s) and (personaje.y < HEIGHT - celda.height * 2)):
+    # ¿Xq 2?: Una (a la que me voy a desplazar) y otra (por la pared, que NO puedo atravesar)
+    personaje.y += celda.height
     
-    if keyboard.space:
-        if mapa_actual == mapa:
-            mapa_actual = mapa_2
-        else:
-            mapa_actual = mapa
+  elif ((keyboard.up or keyboard.w) and (personaje.y > (celda.height * 2))):
+        personaje.y -= celda.height
