@@ -8,20 +8,25 @@ pack escalado (drive del profe): https://drive.google.com/drive/folders/19obh4TK
 
 > Página para redimensionar assets https://imageresizer.com/bulk-resize/
 ============================================================================================================================
-Version actual: [M9.L1] - Actividad #3: "Bucles anidados"
-Objetivo: Implementar bucles for anidados para dibujar nuestro mapa
+
+Version actual: [M9.L1] - Actividad #5: "Atributos"
+Objetivo: Familiarizarnos con los atributos agregando salud y ataque a nuestro personaje
+          > Creamos nuestro personaje como un objeto Actor() con sus respectivos atributos y los mostramos por pantalla
+
+NOTA: La actividad #4 fue resuelta con el código de la actividad #3
 
 PASOS:
 
-1º) Crear los Actores que contienen nuestros tipos de casillas ("Paleta de Terrenos")
-2º) Crear nuestra Función dibujar_mapa(mapa) que convierte los datos de una tabla (mapa) en los gráficos de nuestro nivel
-3º) Crear una variable que almacene la habitación actual (mapa)
-4º) Agregar nuestro update(dt)
+1º) Creamos Actor() personaje
+2º) Le damos sus atributos (salud, ataque)
+3º) Eliminamos update(dt) y modificamos nuestra función draw() (rem: apagar texto)
 
+NOTA: En el próximo ejercicio implementaremos el despalzamiento entre celdas por turnos con on_key_down(key)
 """
 
 # Ventana de juego hecha de celdas
 celda = Actor('border') # Celda que voy a utilizar como referencia para mi mapa
+
 """ ******************************************************************* """
 # Paleta de terrenos:
 pared =  Actor("border") # 0: Pared de bloques
@@ -37,6 +42,16 @@ HEIGHT = celda.height * cant_celdas_alto  # Alto de la ventana (en píxeles)
 
 TITLE = "Rogue-like: Mazmorra Maldita" # Título de la ventana de juego
 FPS = 60 # Número de fotogramas por segundo
+
+# Personaje:
+personaje = Actor("stand")
+
+# Nota: si quieren llevar control de la vida, pueden crear dos atributos: "salud_max" y "salud_actual"
+personaje.salud = 100
+
+# Nota: si quieren hacer más interesante el combate pueden agregar atributos para el valor mínimo de ataque y el máximo
+# (también pueden implementar un sistema de miss y critical hits) Por ejemplo ataque de 2-5 de daño y crítico 2xMAX = 10
+personaje.ataque = 5
 
 ################## MAPAS ##################
 
@@ -109,12 +124,12 @@ def dibujar_mapa(mapa, mostrar_texto):
 
 def draw():
     screen.fill((200,200,200))
-    dibujar_mapa(mapa = mapa_actual, mostrar_texto = True)
+    dibujar_mapa(mapa = mapa_actual, mostrar_texto = False)
+    personaje.draw()
 
-    # Borrar después de la próxima tarea:
-    screen.draw.text(("  Ventana de " + str(cant_celdas_ancho) + " x " + str(cant_celdas_alto) + "  "), center=(WIDTH/2, int(celda.height /2)), color = "white", background = "black", fontsize = int(celda.height /2))
-
-    screen.draw.text("Pulse [Espacio] para alternar el diseño del mapa", center=(WIDTH/2, ((cant_celdas_alto * celda.height) - int(celda.height /2))), color = "white", background = "black", fontsize = int(celda.height /3))
+    # Mostramos valores personaje:
+    screen.draw.text(("❤️: " + str(personaje.salud)), midright=((WIDTH - 15), 14), color = 'white', fontsize = 16)
+    screen.draw.text(("🗡️: " + str(personaje.ataque)), midright=((WIDTH - 15), 36), color = 'white', fontsize = 16)
 
 def update(dt):
     global mapa_actual
