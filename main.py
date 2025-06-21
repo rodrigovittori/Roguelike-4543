@@ -10,14 +10,19 @@ Link al repo de GitHub: https://github.com/rodrigovittori/Roguelike-4543/
 > Página para redimensionar assets https://imageresizer.com/bulk-resize/
 ============================================================================================================================
 
-Version actual: [M9.L2] - Actividades Nº 4 "Procesamiento de colisiones"
-Objetivo del ejercicio: Eliminar enemigos cuya salud sea menor o igual a 0 puntos
+Version actual: [M9.L2] - Actividades Nº 5 "Aparición de las bonificaciones"
+Objetivo del ejercicio: Agregar mecánicas de bonus, su spawn, mostrarlas en pantalla
 
-NOTA: Todavía NO hay game-over (somos inmortales :D)
+NOTA: Todavía SEGUIMOS sin game-over (somos inmortales :D)
+
+NOTA 2: Las colisiones con los bonus se programan en la SIGUIENTE tarea
 
 Pasos:
-#1: Crear una variable donde almacenemos la posición del jugador ANTES de moverse, en caso de colisión, lo regresamos a esas coordenadas
-#2: Agregar una condición donde, si hubo colisión Y la salud del enemigo baja a 0 o un valor negativo, lo eliminamos
+
+#1: Crear una nueva lista para los bonus
+#2: Durante la creación de enemigos vamos a asignarles un valor de bonus que dropearán tras ser derrotados
+#3: Agregar un bucle en draw para dibujar los bonus en pantalla
+#4: Al derrotar a un enemigo, spawnearemos el bonus que se le asignó al crearlo
 """
 
 import random
@@ -85,9 +90,14 @@ while (len(lista_enemigos) < CANT_ENEMIGOS_A_SPAWNEAR):
         # Si NO hay conflicto: randomizamos salud, ataque y lo agregamos a lista_enemigos
         nvo_enemigo.salud = random.randint(10, 20)
         nvo_enemigo.ataque = random.randint(5, 10)
+        nvo_enemigo.bonus = random.randint(0, 2)   # 0: NADA / 1: curacion / 2: espadas
         
         """ FINALMENTE, lo agregamos a la lista """
         lista_enemigos.append(nvo_enemigo)
+
+################## BONUS ##################
+
+lista_bonus = []
 
 ################## MAPAS ##################
 
@@ -157,6 +167,9 @@ def draw():
     dibujar_mapa(mapa = mapa_actual, mostrar_texto = False)
     personaje.draw()
 
+    for bonus in lista_bonus:
+        bonus.draw()
+    
     for enemigo in lista_enemigos:
         enemigo.draw()
 
@@ -202,8 +215,25 @@ def on_key_down(key):
       personaje.salud -= enemigo_atacado.ataque
       # Nota: Podríamos agregar un sistema de puntos de daño flotantes en pantalla
 
-      # Si el enemigo se quedó sin puntos de salud, lo eliminamos:
+      # Si el enemigo se quedó sin puntos de salud, 
       if (enemigo_atacado.salud <= 0):
+          # ANTES DE DESTRUÍRLO/ELIMINARLO -> Spawneamos bonus:
+          if (enemigo_atacado.bonus == 0):
+              # NADA
+              enemigo_atacado.bonus += 0 # TENGO que poner algo para que python NO devuelva error
+              
+          elif (enemigo_atacado.bonus == 1):
+              # Spawneamos curación:
+              nvo_bonus = Actor("heart", enemigo_atacado.pos)    # Spawneo un nuevo bonus en la posición del enemigo derrotado
+              lista_bonus.append(nvo_bonus)                      # Lo agrego a la lista de bonus
+
+          elif (enemigo_atacado.bonus == 2):
+              # Spawneamos mejora ataque:
+              nvo_bonus = Actor("sword", enemigo_atacado.pos)    # Spawneo un nuevo bonus en la posición del enemigo derrotado
+              lista_bonus.append(nvo_bonus)                      # Lo agrego a la lista de bonus
+
+          # Ya creado el bonus, bye bye~♥
+          
           # Método Nº 1: pop() con índice según colision
           #lista_enemigos.pop(colision)
 
