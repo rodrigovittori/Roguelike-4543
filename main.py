@@ -1,33 +1,30 @@
 #pgzero
-
 """
 Pack Kodland: https://kenney.nl/assets/roguelike-caves-dungeons (NO VIENE PRECORTADO)
 packs de assets: https://kenney.nl/assets/series:Tiny?sort=update (LO TIENEN QUE ESCALAR)
 
 pack escalado (drive del profe): https://drive.google.com/drive/folders/19obh4TK0RIBWlXOsaOq9uJ287jUHuLTn?usp=drive_link
 
+Link al repo de GitHub: https://github.com/rodrigovittori/Roguelike-4543/
+
 > Página para redimensionar assets https://imageresizer.com/bulk-resize/
 ============================================================================================================================
 
-Version actual: [M9.L1] - Actividades Extra
+Version actual: [M9.L2] - Actividades Nº 2 "Generando Enemigos"
+Objetivo: Crear nuestro primer enemigo y generar variaciones del mismo con componentes random/aleatorios
 
-Actividad Nº 7 es Kahoot! (no implica código)
-Actividad Nº 8 "Mantenerse dentro de los límites": Nuestro código ya lo cumple
-Actividad Nº 9 "Nueva fila": Modificamos variable cant_celdas_alto a 8 
-                             modificamos draw() para que se dibuje en la fila extra
-                             modificamos on_key_down() para que el PJ NO pueda salirse
-                             
-Actividad Nº 10 "Un campo más grande": modificamos cant_casillas_alto y cant_casillas_ancho
-                                       ajustamos los mapas
+NOTA: La actividad Nº 1 "Revisando nuestro mapa de sueños" NO involucra nuestro juego.
 
-NOTA: Borrar update(dt)
+Pasos:
+#1: Importar random
+#2: Creamos una constante que determine la cantidad de enemigos a spawnear (5)
+#3: Creamos un bucle FOR donde calculamos la posición, la validamos,
+    creamos los actores enemigos y les asignamos su salud y ataque con valores randomizados
+#4: Agregamos un bucle FOR en nuestro draw() para mostrar los enemigos en pantalla
 
-PASOS:
-
-1º) Implementar el despalzamiento entre celdas por turnos con on_key_down(key)
-
-NOTA: Revisar restricciones
+Nota: Pronto calcularemos las colisiones contra ellos
 """
+import random
 
 # Ventana de juego hecha de celdas
 celda = Actor('border') # Celda que voy a utilizar como referencia para mi mapa
@@ -57,6 +54,43 @@ personaje.salud = 100
 # Nota: si quieren hacer más interesante el combate pueden agregar atributos para el valor mínimo de ataque y el máximo
 # (también pueden implementar un sistema de miss y critical hits) Por ejemplo ataque de 2-5 de daño y crítico 2xMAX = 10
 personaje.ataque = 5
+
+################# ENEMIGOS ################
+
+CANT_ENEMIGOS_A_SPAWNEAR = 5
+lista_enemigos = []
+
+############ GENERAR ENEMIGOS #############
+
+# To-Do: migrar a función
+while (len(lista_enemigos) < CANT_ENEMIGOS_A_SPAWNEAR):
+    """ PASO 1: Generar coordenadas random """
+    
+    x = (random.randint(1, cant_celdas_ancho - 2) * celda.width)
+    y = (random.randint(1, cant_celdas_alto - 3)  * celda.height)
+    # To-Do: Agregar variable para determinar tipo de enemigo a spawnear
+    
+    nvo_enemigo = Actor("enemy", topleft = (x, y))
+
+    """ PASO 2: Validar posición / evitar enemigos superpuestos """
+    # Validamos que los enemigos no spawneen uno sobre el otro
+    posicion_duplicada = False
+    
+    for enemigo in lista_enemigos:
+        if (nvo_enemigo.pos == enemigo.pos): # Si la posición de nvo_enemigo es IGUAL a la de CUALQUIER enemigo en la lista,
+            posicion_duplicada = True        # Actualizamos la flag que indica que la posicion está duplicada
+            
+    if (posicion_duplicada):
+        continue
+        
+    else:
+        """ PASO 3: Generar atributos random """
+        # Si NO hay conflicto: randomizamos salud, ataque y lo agregamos a lista_enemigos
+        nvo_enemigo.salud = random.randint(10, 20)
+        nvo_enemigo.ataque = random.randint(5, 10)
+        
+        """ FINALMENTE, lo agregamos a la lista """
+        lista_enemigos.append(nvo_enemigo)
 
 ################## MAPAS ##################
 
@@ -125,6 +159,9 @@ def draw():
     screen.fill((200,200,200))
     dibujar_mapa(mapa = mapa_actual, mostrar_texto = False)
     personaje.draw()
+
+    for enemigo in lista_enemigos:
+        enemigo.draw()
 
     # Mostramos valores personaje:
     screen.draw.text(("❤️: " + str(personaje.salud)), midleft = (int(celda.width / 2), (HEIGHT - int(celda.height / 2))), color = 'black', fontsize = 36)
