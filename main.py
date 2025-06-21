@@ -9,8 +9,16 @@ pack escalado (drive del profe): https://drive.google.com/drive/folders/19obh4TK
 > Página para redimensionar assets https://imageresizer.com/bulk-resize/
 ============================================================================================================================
 
-Version actual: [M9.L1] - Actividad #6: "Desplazamiento a través de las celdas"
-Objetivo: Implementar nuestro sistema de movimiento (por casillas/por turnos)
+Version actual: [M9.L1] - Actividades Extra
+
+Actividad Nº 7 es Kahoot! (no implica código)
+Actividad Nº 8 "Mantenerse dentro de los límites": Nuestro código ya lo cumple
+Actividad Nº 9 "Nueva fila": Modificamos variable cant_celdas_alto a 8 
+                             modificamos draw() para que se dibuje en la fila extra
+                             modificamos on_key_down() para que el PJ NO pueda salirse
+                             
+Actividad Nº 10 "Un campo más grande": modificamos cant_casillas_alto y cant_casillas_ancho
+                                       ajustamos los mapas
 
 NOTA: Borrar update(dt)
 
@@ -31,8 +39,8 @@ piso =   Actor("floor")  # 1: Suelo liso (sin decoración)
 crack =  Actor("crack")  # 2: Suelo resquebrajado/quebradizo
 huesos = Actor("bones")  # 3: Suelo con una pilita de huesos
 """ ******************************************************************* """
-cant_celdas_ancho = 7 # Ancho del mapa (en celdas)
-cant_celdas_alto =  7 # Altura del mapa (en celdas)
+cant_celdas_ancho = 9 # Ancho del mapa (en celdas)
+cant_celdas_alto = 10 # Altura del mapa (en celdas)
 
 WIDTH  = celda.width  * cant_celdas_ancho # Ancho de la ventana (en píxeles)
 HEIGHT = celda.height * cant_celdas_alto  # Alto de la ventana (en píxeles)
@@ -52,21 +60,15 @@ personaje.ataque = 5
 
 ################## MAPAS ##################
 
-mapa = [ [0, 0, 0, 0, 0, 0, 0],
-         [0, 1, 2, 1, 3, 1, 0],
-         [0, 1, 1, 2, 1, 1, 0],
-         [0, 3, 2, 1, 1, 3, 0],
-         [0, 1, 1, 1, 3, 1, 0],
-         [0, 1, 3, 1, 1, 2, 0],
-         [0, 0, 0, 0, 0, 0, 0] ]
-
-mapa_2 = [ [0, 0, 0, 0, 0, 0, 0],
-           [0, 1, 1, 1, 1, 1, 0],
-           [0, 1, 3, 1, 3, 1, 0],
-           [0, 1, 1, 1, 1, 1, 0],
-           [0, 3, 1, 1, 1, 3, 0],
-           [0, 1, 3, 3, 3, 1, 0],
-           [0, 0, 0, 0, 0, 0, 0] ]
+mapa = [ [0, 0, 0, 0, 0, 0, 0, 0, 0],
+         [0, 1, 1, 1, 1, 1, 1, 1, 0],
+         [0, 1, 1, 2, 1, 3, 1, 1, 0],
+         [0, 1, 1, 1, 2, 1, 1, 1, 0],
+         [0, 1, 3, 2, 1, 1, 3, 1, 0],
+         [0, 1, 1, 1, 1, 3, 1, 1, 0],
+         [0, 1, 1, 3, 1, 1, 2, 1, 0],
+         [0, 1, 1, 1, 1, 1, 1, 1, 0],
+         [0, 0, 0, 0, 0, 0, 0, 0, 0] ]
 
 ##########################################
 
@@ -125,8 +127,8 @@ def draw():
     personaje.draw()
 
     # Mostramos valores personaje:
-    screen.draw.text(("❤️: " + str(personaje.salud)), midright=((WIDTH - 15), 14), color = 'white', fontsize = 16)
-    screen.draw.text(("🗡️: " + str(personaje.ataque)), midright=((WIDTH - 15), 36), color = 'white', fontsize = 16)
+    screen.draw.text(("❤️: " + str(personaje.salud)), midleft = (int(celda.width / 2), (HEIGHT - int(celda.height / 2))), color = 'black', fontsize = 36)
+    screen.draw.text(("🗡️: " + str(personaje.ataque)), midright = ( (WIDTH - int(celda.width / 2)), (HEIGHT - int(celda.height / 2)) ), color = 'black', fontsize = 36)
 
 def on_key_down(key):
   
@@ -139,8 +141,8 @@ def on_key_down(key):
     personaje.x -= celda.width
     personaje.image = "left" # xq mira a la izq
         
-  elif ((keyboard.down or keyboard.s) and (personaje.y < HEIGHT - celda.height * 2)):
-    # ¿Xq 2?: Una (a la que me voy a desplazar) y otra (por la pared, que NO puedo atravesar)
+  elif ((keyboard.down or keyboard.s) and (personaje.y < HEIGHT - celda.height * 3)):
+    # ¿Xq 3?: Una (a la que me voy a desplazar), otra (por la pared, que NO puedo atravesar) Y UNA TERCERA (para mostrar el texto)
     personaje.y += celda.height
     
   elif ((keyboard.up or keyboard.w) and (personaje.y > (celda.height * 2))):
